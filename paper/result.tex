@@ -64,6 +64,8 @@ Over time, as new documents are published and the model updates, new trends in b
 The model is also capable of dealing with changes in the company's overall business model. When the topic proportions change, the vector representation will wander over the simplex and change the weightings in the risk factor portfolio, while still keeping the indices tradeable.
 
 \subsection{Previous Work}
+\textb{Todo} add proper cite to all the paper mentioned in this section
+
 Grafe (2011) uses LDA in an attempt to classify companies by applying topic models to a data set of 3800 earnings calls transcripts. In earnings calls management discusses financial results with analysts and investors and
 provides some guidance on business numbers.
 Grafe believes the unstructured nature of earnings calls to be more amenable to
@@ -96,9 +98,9 @@ Curme et al (2013) look at how often certain Wikipedia articles are used before 
 financial moves. Here Wikipedia serves as a proxy for the attempt to gather
 information before trading decisions are taken.
 
-\textbf{Todo} Add review of finnum1
 \textbf{Todo} add review of 10k evaluation
 
+Some work on building automated piplines and utilizing unsupervised method of spliting financial information into components - topics was done by Spark (2019)\cite{ref_finnum_spark}. The work was focused on unsupervised feature extraction from financial tweet and constuctin pipelines to feed a custom feed forward neural network which trained to classify numerical information presented in tweets into several categories e.g. Price, Date, Product Series etc. Spark uses LDA to construct a topic distribution for every tweet and use resulted vector as additional latent feature.
 
 \subsection{Topic modeling and Latent Dirichlet Allocation}
 In machine learning, topic models are statistical models used to discover a number of abstract relations, called topics, in data. In this paper, we are using a topic model called Dynamic Topic Model (DTM), a variant of Latent Dirichlet Allocation.
@@ -317,14 +319,14 @@ i) extracts all bigrams with  more than 100 appearances in the corpus \newline
 ii) out of the bigram list with more than 100 appearances, keeps the top 30
 As can be seen in the results below, we are able to identify several open compounds, such as "crude oil", "potash magnesium", etc. which are relevant in the context of company reports.
 \newline
-Furthermore we heuristically define lower and upper bound parameters $l_{min}$ and $l_{max}$ to remove words which appear in less than $l_{min}$ or $l_{max}$ documents. This is because words which appear either only marginally or too frequently do not contribute to a meaningful word distribution and topic split.
+Furthermore we heuristically define lower and upper bound parameters $l_{min}$ and $l_{max}$ to remove words which appear in less than $l_{min}$ or in more than $l_{max}$ documents. This is because words which appear either only marginally or too frequently do not contribute to a meaningful word distribution and topic split.
 We set $l_{min}$ to 3 and $l_{max}$ to 2019 (50\% of 4038).
 
 
 \section{Experiment setup}
 \textbf{Todo} add general description
-In this paper, we are analyzing reports published in the time frame between the 1st of January 2005 and the 1st of January 2018. Some series of company reports have to be discarded, because it does not cover the relevant time frame, or because the data on returns is not publicly available for the time frame mentioned above. After initial processing 4041 reports representing 79 companies remain. 
-The following section will summarize the process in the following order: first, data pre-processing then document and feature extraction then parameter fitting and extraction of risk factors.
+In this paper, we are analyzing reports published in the time frame between the 1st of January 2005 and the 1st of January 2018. Some series of company reports have to be discarded, because it does not cover the relevant time frame, or because the data on returns is not publicly available for the time frame mentioned above. After initial processing 4038 reports representing 79 companies remain. 
+The following section will summarize the process in the following order: first, construction of document series  and feature extraction then parameter fitting and extraction of risk factors.
 
 \subsection{Documents and feature extraction, bag of words model}
 DTM uses a bag of words model. This means that the order of the words and their grammatical meaning in a single document are considered irrelevant. Instead the model focuses purely on the frequency of word occurrence. 
@@ -333,9 +335,10 @@ All documents are bucketed by publication year and it is assumed that a word dic
 The relevant data features of the documents are thus the word frequency distribution, the publication year as well as the stock ticker this document belongs to.
 
 \subsection{Parameter fitting}
+\subsubsection{Number of topics}
 The Dynamic Topic Model algorithm requires several user choices, the most critical being $T$, the number of topics one would like to extract. 
 This is because in the Dynamic Topic model implementation the total number of topics is fixed throughout the lifetime of the experiment. While the individual topics might change, it is not possible to vary the number of topics itself.
-Previously researchers \cite{ref_Neuhierl_2013}\cite{ref_ratku_2016}\cite{evaluation_10k}  used heuristics and manual effort to assume the numbers of topics in the analysis of financial documents; in our application, we move towards an automated solution. We incorporate the intrinsic evaluation of measurements such as Perplexity and Coherence. We built a pipeline where we use Perplexity to narrow down the possible $T$ and then utilize the Coherence score to fine-tune $T$. In the following section, we give a brief explanation of the measurements above and elaborate on the approach we take to automate $T's$ selection.
+Previously researchers \cite{ref_Neuhierl_2013}\cite{ref_ratku_2016}\cite{evaluation_10k}  used heuristics and manual effort to assume the numbers of topics in the analysis of financial documents; in our application, we move towards an automated solution. We incorporate the intrinsic evaluation of measurements such as Perplexity and Coherence. We built a pipeline where we use Perplexity to narrow down the possible $T$ and then utilize the Coherence score to fine-tune $T$ based on topics interpretability. In Figure \ref{fig:topic-num} we plot development of the \textit{Perplexity} on the left and textit{Coherence} $C_v$ on the rignt scores for a models with $T$ from 5 up to 60. On left plot area around optimal \textit{Perplexity} is highlighted - $T$ from 15 to 25. In the following section, we give a brief explanation of the measurements above and elaborate on the approach we take to automate $T's$ selection.
 
 \begin{figure}
     \centering
@@ -345,7 +348,7 @@ Previously researchers \cite{ref_Neuhierl_2013}\cite{ref_ratku_2016}\cite{evalua
 \end{figure}
 
 Perplexity is an intrinsic measure, defined as the test sample's as a normalized inverse probability of a test set(\ref{eq:perplexity}), indicating how badly a model predicts held-out documents.
-Consider for example \footnote{this is a simplified example for illustration only, the actual DTM language model used in this paper does evaluate sentences to predict the next word, but uses a bag of words model} the sentence "2016 was a year of many ......".
+Consider for example \footnote{this is a simplified example for illustration only, the actual DTM language model used in this paper does evaluate sentences to predict the next word, but uses a bag of words model} the sentence "2020 was a year of many ......".
 A plausible replacement for "....." would be "changes" or "difficulties". Not so plausible replacements would be "rhinoceroses", "recumbentibuses", "yogeybogeyboxes" etc. If a registers a word in a document it does not expect (e.g. does not place a high probability of occurrence in), it is "perplexed".
 Considering the unseen "test data set" was not used in models training process, the best model is the one with the test sample's lowest \textit{Perplexity}. In other words, a low Perplexity score shows that a model is not \textit{perplexed} by unseen test data, thus has a good understanding of the underlying - "true" language model.
 
@@ -354,8 +357,8 @@ Considering the unseen "test data set" was not used in models training process, 
     PP_{of test set}(W) = \sqrt[N]{\frac{1}{P(w_1, w_2, ... , w_n)}}
 \end{equation}
 
- Chang et al.\cite{ref_lda_human_evaluation} challenge the common sole usage of the likelihood for evaluation of topic modeling, so in addition to perplexity we consider coherence\cite{ref_lda_coh_exploring} \cite{ref_lda_coh_1} \cite{ref_lda_coh_2} \cite{ref_lda_coh_3}.
-Coherence scores try to automatically model human interpretability of topics, that is, trying to predict how intuitively coherent a topic would be perceived as by a human interpreter. 
+In addition to \textit{Perplexity} we consider \textit{Coherence} score\cite{ref_lda_coh_exploring} \cite{ref_lda_coh_1} \cite{ref_lda_coh_2} \cite{ref_lda_coh_3}. Since \textit{Perplexity} is a function of likelihood and Chang et al.\cite{ref_lda_human_evaluation} challenge the sole usage of the likelihood for evaluation of topic modeling .
+\textit{Coherence} scores try to automatically model human interpretability of topics, that is, trying to predict how intuitively coherent a topic would be perceived as by a human interpreter. 
 A set of elements is coherent if the elements in support each other.
 For example a topic with a top word count of "lollipop, x-ray, exhaust fumes, melancholy, Christmas", while poetically interesting, would likely be perceived as less coherent than one that has the words "mine, mining, ore, copper, gold" as the top results.
 A good coherence measure would mirror a human scoring as close as possible.
@@ -367,7 +370,7 @@ $P$ is the word probabilities and  $P_{sw(110)}$ refers to a Boolean sliding win
 $M$ is the confirmation measures and $\bar{m}_{cos(nlr,1)}$ is the cosine vector similarity between the (direct) normalized log ratio measure and 1.
 $\sigma_a$ is simply the arithmetic mean
 
-The exact measure used is essentially an implementation choice and other measures are possible and could inform the number of topics. In this case, we have decided to use the V-measure on the basis of human correlation.
+The exact measure used is essentially an implementation choice and other measures like Rate of Perplexity changes (RPC) \textb{todo: reference to RPC paper} Absolute Perplexity\textb{todo: reference to AP paper} are possible and could inform the number of topics. In this case, we have decided to use the $C_v$ measure on the basis of human correlation.
 
 \begin{table}[h!]
 \centering
@@ -406,10 +409,11 @@ The exact measure used is essentially an implementation choice and other measure
 \end{tabular}
 \end{table}
 
+\textbf{Todo: Add it as an algorithm}
 We construct our automated pipeline to choose a value of $T$, in the following way. We sample all documents for the first time slice in the corpus and iteratively calculate the coherence and perplexity scores for $T$ in the range between 10 and 60. As we state above for practical reasons we choose to compute logarithm of the Perplexity score as normalized likelihood and Coherence measure called $C_v$. We found a global maximum for \textit{log}(Perplexity) at -7.672555 and the corresponding $T$ equal to 20. As the second step, we define an interest area as $T$ +- 5 of a \textit{log}(Perplexity score) global maximum. And fine-tune the $T$ in the range by searching for the maximum Coherence $C_v$ score within that interest area. We found interest area's maximum maximum Coherence $C_v$ at 0.521899 and corresponding $T$ equal to 22.
+Values are shown in Table \ref{tabl_scan_for_t}.
 
-In Figure \ref{fig:topic-num} we show the Perplexity and Coherence $C_v$ scores for a model with $T$ from 5 up to 60 (on the left) and $T$ from 15 to 25 - the area selected based on Perplexity (on the right). Values are shown in Table \ref{tabl_scan_for_t}.
-
+\subsubsection{Topics distribution, variation and run parameters}
 Three other run parameters are $\alpha$ $\beta$ and $\sigma$  as well as the minimum number and maximum number of iterations. 
 $\alpha $ is the Dirichlet prior of the topic proportions $\theta$, we chose the default value of 0.01. $\beta$ is the Dirichlet prior of the word distributions, we chose the default parameter of 0.5.
 In general we have noticed that the choice of $\alpha$ and $\beta$ is less important, as the model converges after a sufficient number of iterations for any $\alpha$ and $\beta$. For this reason we do not develop an automated solution here but instead use the default values which were heuristically developed by Blei and al.

@@ -5,7 +5,7 @@ import multiprocessing
 
 dir_data_raw = os.path.join('..', 'data_raw')
 dir_data_pdf = os.path.join(dir_data_raw, 'reports_pdf')
-dir_data_txt = os.path.join(dir_data_raw, 'reports_txt')
+dir_data_txt = os.path.join(dir_data_raw, 'reports_txt_all')
 
 def convert(findex, ticker):
     dir_ticker_pdf = os.path.join(dir_data_pdf, findex, ticker)
@@ -34,8 +34,8 @@ def convert(findex, ticker):
 for findx in os.listdir(dir_data_pdf):
     dir_findx = os.path.join(dir_data_pdf, findx)
     if os.path.isdir(dir_findx):
-        #for ticker in os.listdir(dir_findx):
-        #    convert(findx, ticker)
-        with multiprocessing.Pool(processes=4) as pool:
-            pool.starmap(convert, [(findx, ticker) for ticker in os.listdir(dir_findx)])
+        for ticker in os.listdir(dir_findx):
+            convert(findx, ticker)
+        #with multiprocessing.Pool(processes=4) as pool:
+            #pool.starmap(convert, [(findx, ticker) for ticker in os.listdir(dir_findx)])
 
