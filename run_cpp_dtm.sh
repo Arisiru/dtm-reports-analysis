@@ -1,16 +1,16 @@
 # Run the dynamic topic model.
 ../../cpp/dtm/dtm/main \
---ntopics=20 \
+--ntopics=30 \
 --mode=fit \
 --rng_seed=193748 \
 --initialize_lda=true \
---corpus_prefix=data_runs/run_32_20/run_32_20 \
---outname=data_runs/run_32_20/results \
+--corpus_prefix=data_runs/run_20_30/run_20_30 \
+--outname=data_runs/run_20_30/results \
 --top_chain_var=0.005 \
---alpha=0.0109532 \
---lda_sequence_min_iter=10 \
---lda_sequence_max_iter=50 \
---lda_max_em_iter=50
+--alpha=0.01 \
+--lda_sequence_min_iter=5 \
+--lda_sequence_max_iter=30 \
+--lda_max_em_iter=30
 
 # Run the influence model.
 # ../dtm/dtm/main \
