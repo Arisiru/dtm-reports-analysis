@@ -10,6 +10,7 @@ dir_data_txt = os.path.join(dir_data_raw, 'reports_txt')
 
 def convert(findex, ticker):
     dir_ticker_pdf = os.path.join(dir_data_pdf, findex, ticker)
+    print(dir_ticker_pdf)
     if os.path.isdir(dir_ticker_pdf):
         for report_pdf in os.listdir(dir_ticker_pdf):
             if '.pdf' in report_pdf:
@@ -33,14 +34,16 @@ def convert(findex, ticker):
                               (pdf_report_path, characters))
                     else:
                         print("No file after conversion %s" % txt_report_path)
-                # else:
-                    #print("%s exists" % txt_report_path)
+                else:
+                    print("%s exists" % txt_report_path)
 
 
-for findx in os.listdir(dir_data_pdf):
-    dir_findx = os.path.join(dir_data_pdf, findx)
-    if os.path.isdir(dir_findx):
-        for ticker in os.listdir(dir_findx):
-            convert(findx, ticker)
-        # with multiprocessing.Pool(processes=4) as pool:
-            #pool.starmap(convert, [(findx, ticker) for ticker in os.listdir(dir_findx)])
+convert("DJIA", "TVE")
+
+# for findx in os.listdir(dir_data_pdf):
+#    dir_findx = os.path.join(dir_data_pdf, findx)
+#    if os.path.isdir(dir_findx):
+#        for ticker in os.listdir(dir_findx):
+#            convert(findx, ticker)
+# with multiprocessing.Pool(processes=4) as pool:
+#pool.starmap(convert, [(findx, ticker) for ticker in os.listdir(dir_findx)])
