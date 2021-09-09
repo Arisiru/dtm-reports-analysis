@@ -9,8 +9,8 @@
 --top_chain_var=0.015 \
 --alpha=0.01 \
 --lda_sequence_min_iter=5 \
---lda_sequence_max_iter=200 \
---lda_max_em_iter=200
+--lda_sequence_max_iter=50 \
+--lda_max_em_iter=50
 
 # Run the influence model.
 # ../dtm/dtm/main \
