@@ -37,6 +37,7 @@ for ticker in tickers:
     construct_data_minus_ticker_input(
         ticker,
         DIRS['run to base'],
+        RUN_TO_BASE,
         DIRS['experiment'],
         run_code)
 
