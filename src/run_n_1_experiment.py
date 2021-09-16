@@ -45,7 +45,10 @@ for ticker in tickers:
             t=T,
             dtm_path=FILES['dtm command'],
             data_path=DIRS['experiment'],
-            run_code=run_code) == SUCCESS_CODE:
+            run_code=run_code,
+            iter_lda_min=5,
+            iter_lda_max=30,
+            iter_lda_em_max=30) == SUCCESS_CODE:
 
         processed_tickers = tickers_io.update_processed_tickers(
             ticker,
@@ -57,3 +60,4 @@ for ticker in tickers:
 
 
 # EOF
+# started 20210916 1750
