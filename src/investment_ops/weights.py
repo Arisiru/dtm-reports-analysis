@@ -1,7 +1,8 @@
 import numpy as np
+import scipy
 
 
-def get_weights(gammas={}, tickers=[], number_of_topics=0):
+def get_weights(gammas={}, tickers=[], number_of_topics=0, bounds=None):
     # gammas[year][ticker] = normalized
     weights = {}
     for year, tickers_gammas in gammas.items():
@@ -16,8 +17,12 @@ def get_weights(gammas={}, tickers=[], number_of_topics=0):
             b = np.zeros(number_of_topics)
             b[t] = 1.0
 
-            x_lstsq = np.linalg.lstsq(A, b, rcond=None)
-            x_lstsq_fn_lists.append([x for x in x_lstsq[0]])
+            if bounds:
+                x_lstsq = scipy.optimize.lsq_linear(A, b, bounds=bounds)
+                x_lstsq_fn_lists.append([x for x in x_lstsq['x']])
+            else:
+                x_lstsq = np.linalg.lstsq(A, b, rcond=None)
+                x_lstsq_fn_lists.append([x for x in x_lstsq[0]])
 
         weights[year] = {}
         for ticker_i, ticker in enumerate(tickers):
